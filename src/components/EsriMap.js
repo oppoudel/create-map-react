@@ -1,44 +1,47 @@
-import React from 'react'
-import { loadModules } from 'esri-loader'
+import React from 'react';
+import { loadModules } from 'esri-loader';
 
 class EsriMap extends React.Component {
   componentDidMount() {
-    this.createMap()
+    this.createMap();
   }
   createMap() {
-    const { layers, esriMap: { zoom, center } } = this.props
+    const { layers, esriMap: { zoom, center } } = this.props;
     const selectedIds = layers
       .filter(layer => layer.selected)
-      .map(layer => layer.id)
+      .map(layer => layer.id);
 
     loadModules(['esri/views/MapView', 'esri/Map', 'esri/layers/Layer']).then(
       ([MapView, Map, Layer]) => {
         const webmap = new Map({
-          basemap: 'topo'
-        })
+          basemap: 'topo',
+        });
         const view = new MapView({
           map: webmap,
           container: 'viewDiv',
           zoom: zoom,
-          center: center
-        })
+          center: center,
+        });
         selectedIds.forEach(id => {
           Layer.fromPortalItem({
             portalItem: {
-              id: id
-            }
+              id: id,
+            },
           }).then(function(layer) {
-            webmap.add(layer)
-          })
-        })
-      }
-    )
+            webmap.add(layer);
+          });
+        });
+      },
+    );
   }
   render() {
     return (
-      <div id="viewDiv" style={{ height: `calc(100vh - 8em)`, width: '100' }} />
-    )
+      <div
+        id="viewDiv"
+        style={{ height: `calc(100vh - 8em)`, width: '100', marginTop: '4em' }}
+      />
+    );
   }
 }
 
-export default EsriMap
+export default EsriMap;

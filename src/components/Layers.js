@@ -1,26 +1,33 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Container, Grid, List, Button, Message } from 'semantic-ui-react'
-import Layer from './Layer'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Container,
+  Grid,
+  List,
+  Button,
+  Message,
+  Input,
+} from 'semantic-ui-react';
+import Layer from './Layer';
 const style = {
   aside: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   link: {
-    color: 'white'
-  }
-}
-
+    color: 'white',
+  },
+};
 const Layers = ({ layers, toggleSelection }) => {
-  const selectedLayersLen = layers.filter(layer => layer.selected).length
+  const selectedLayersLen = layers.filter(layer => layer.selected).length;
   return (
-    <Container>
+    <Container style={{ marginTop: '5em' }}>
       <Grid columns={2} stackable>
         <Grid.Column width={12}>
-          <List divided verticalAlign="middle">
+          <Input fluid focus icon="search" placeholder="Search Layer..." />
+          <List divided verticalAlign="middle" style={{ marginTop: '2em' }}>
             {layers.map(({ id, title, selected }) => (
               <Layer
                 id={id}
@@ -36,8 +43,7 @@ const Layers = ({ layers, toggleSelection }) => {
           <Button
             positive
             size="big"
-            disabled={selectedLayersLen < 1 || selectedLayersLen > 5}
-          >
+            disabled={selectedLayersLen < 1 || selectedLayersLen > 5}>
             <Link to="/map" style={style.link}>
               Create Map
             </Link>
@@ -48,7 +54,7 @@ const Layers = ({ layers, toggleSelection }) => {
         </Grid.Column>
       </Grid>
     </Container>
-  )
-}
+  );
+};
 
-export default Layers
+export default Layers;

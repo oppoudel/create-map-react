@@ -6,7 +6,6 @@
     "@esri/arcgis-rest-common-types": "^1.1.1",
     "@esri/arcgis-rest-items": "^1.1.1",
     "@esri/arcgis-rest-request": "^1.1.1",
-    "bloomer": "^0.6.3",
     "esri-loader": "^2.2.0",
     "firebase": "^4.12.1",
     "re-base": "^3.2.2",
@@ -23,5 +22,14 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+    
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.2",
+    "prettier": "^1.11.1",
+    "pretty-quick": "^1.4.1"
   }
 }

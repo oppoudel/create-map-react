@@ -1,25 +1,21 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, Input, Responsive } from 'semantic-ui-react'
-import brand from '../CITY-LOGO.png'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Menu, Image, Responsive, Container } from 'semantic-ui-react';
+import brand from '../CITY-LOGO.png';
 
 const Header = ({ children }) => (
-  <Menu inverted>
-    <Menu.Item>
-      <Link to="/" title="Home">
-        <img src={brand} alt="City Logo" height="30px" />
-      </Link>
-    </Menu.Item>
-    <Responsive as={Menu.Item} minWidth={768}>
-      {children}
-    </Responsive>
-
-    <Menu.Menu position="right">
+  <Menu fixed="top" inverted>
+    <Container>
       <Menu.Item>
-        <Input icon="search" placeholder="Search..." />
+        <Link to="/" title="Home">
+          <Image src={brand} alt="City Logo" size="mini" />
+        </Link>
       </Menu.Item>
-    </Menu.Menu>
+      <Responsive as={Menu.Item} minWidth={768}>
+        {children}
+      </Responsive>
+    </Container>
   </Menu>
-)
+);
 
-export default Header
+export default Header;
