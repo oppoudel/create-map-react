@@ -1,17 +1,40 @@
 import React, { Fragment } from 'react';
 import { loadModules } from 'esri-loader';
-import { Input } from 'semantic-ui-react';
+import { Form, Icon } from 'semantic-ui-react';
 import base from '../base';
 import Header from './Header';
+
+const style = {
+  form: {
+    alignItems: 'center',
+    display: 'flex',
+  },
+  input: {
+    width: '50vw',
+    maxWidth: '500px',
+    background: '#000',
+    color: '#fff',
+    fontWeight: 700,
+    fontSize: '1.2857rem',
+    marginRight: 10,
+  },
+  mapDiv: {
+    height: `calc(100vh - 8em)`,
+    width: '100',
+    marginTop: '4em',
+  },
+};
 
 class EsriMap extends React.Component {
   state = {
     esriMap: {
       center: [-76.615, 39.289],
       zoom: 12,
-      title: 'Give Your Map a Title',
+      title: 'Give your Map a Title',
     },
+    editable: true,
   };
+  titleRef = React.createRef();
   componentDidMount() {
     const { params } = this.props.match;
     this.ref = base.syncState(`${params.mapId}/esriMap`, {
@@ -29,6 +52,17 @@ class EsriMap extends React.Component {
   componentWillUnmount() {
     base.removeBinding(this.ref);
   }
+  handleTitleChange = e => {
+    e.preventDefault();
+    console.log(this.titleRef.current.value);
+    this.setState(prevState => ({
+      esriMap: { ...prevState.esriMap, title: this.titleRef.current.value },
+      editable: false,
+    }));
+  };
+  handleEditClick = () => {
+    this.titleRef.current.focus();
+  };
   createMap(data) {
     const layers = data || this.props.layers;
     const selectedIds = layers
@@ -118,20 +152,30 @@ class EsriMap extends React.Component {
     );
   }
   render() {
-    let { title } = this.state.esriMap;
+    let { esriMap, editable } = this.state;
     return (
       <Fragment>
         <Header>
-          <Input value={title} />
+          {editable ? (
+            <Form onSubmit={this.handleTitleChange} style={style.form}>
+              <input
+                type="text"
+                placeholder={esriMap.title || 'Give Your Map a Title'}
+                ref={this.titleRef}
+                style={style.input}
+              />
+              <Icon
+                name="edit"
+                size="large"
+                onClick={this.handleEditClick}
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+              />
+            </Form>
+          ) : (
+            <h3>{esriMap.title}</h3>
+          )}
         </Header>
-        <div
-          id="viewDiv"
-          style={{
-            height: `calc(100vh - 8em)`,
-            width: '100',
-            marginTop: '4em',
-          }}
-        />
+        <div id="viewDiv" style={style.mapDiv} />
       </Fragment>
     );
   }

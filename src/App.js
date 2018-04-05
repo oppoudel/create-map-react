@@ -65,7 +65,9 @@ class App extends Component {
           />
           <Route
             path="/map/:mapId"
-            render={({ match }) => <EsriMap layers={layers} match={match} />}
+            render={({ match }) => (
+              <EsriMap layers={layers} match={match} editable="Yes" />
+            )}
           />
         </Segment>
       </Router>
