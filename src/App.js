@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import pick from 'lodash/pick';
 import 'semantic-ui-css/semantic.min.css';
-import { Segment } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer } from 'semantic-ui-react';
 import { appService, mapId } from './appService';
 import Layers from './components/Layers';
 import EsriMap from './components/EsriMap';
@@ -12,20 +13,16 @@ class App extends Component {
     searchTerm: '',
     layers: [],
   };
-  componentDidMount() {
-    appService.getFeatures().then(response => {
-      const layers = response.map(layer => ({
-        id: layer.id,
-        title: layer.title,
-        selected: false,
-        tags: layer.tags,
-      }));
-      this.setState({ layers });
-    });
+  async componentDidMount() {
+    const response = await appService.getFeatures();
+    const layers = response.map(layer =>
+      pick(layer, ['id', 'title', 'selected', 'tags']),
+    );
     this.ref = base.syncState(`${mapId}/layers`, {
       context: this,
       state: 'layers',
     });
+    this.setState({ layers });
   }
   componentWillUnmount() {
     base.removeBinding(this.ref);
@@ -53,15 +50,21 @@ class App extends Component {
           <Route
             exact
             path="/"
-            render={() => (
-              <Layers
-                layers={layers}
-                toggleSelection={this.onToggleSelection}
-                onSelectInputChange={this.onSelectInputChange}
-                searchTerm={searchTerm}
-                mapId={mapId}
-              />
-            )}
+            render={() =>
+              layers.length < 1 ? (
+                <Dimmer active style={{ height: '100vh' }} inverted>
+                  <Loader size="massive" inverted />
+                </Dimmer>
+              ) : (
+                <Layers
+                  layers={layers}
+                  toggleSelection={this.onToggleSelection}
+                  onSelectInputChange={this.onSelectInputChange}
+                  searchTerm={searchTerm}
+                  mapId={mapId}
+                />
+              )
+            }
           />
           <Route
             path="/map/:mapId"

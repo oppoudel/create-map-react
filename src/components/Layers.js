@@ -30,7 +30,8 @@ const Layers = ({
   searchTerm,
   mapId,
 }) => {
-  const selectedLayersLen = layers.filter(layer => layer.selected).length;
+  const selectedLayersLen =
+    layers.length > 0 && layers.filter(layer => layer.selected).length;
   const isSearched = searchTerm => item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
