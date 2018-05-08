@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
 import { loadModules } from 'esri-loader';
-import { Form, Icon } from 'semantic-ui-react';
+import React, { Fragment } from 'react';
+import { Form, Icon, Menu, Responsive } from 'semantic-ui-react';
 import base from '../base';
-import Header from './Header';
 import './EsriMap.css';
-const style = {
+import Header from './Header';
+const styles = {
   form: {
     alignItems: 'center',
     display: 'flex',
@@ -24,13 +24,6 @@ const style = {
     marginTop: '4em',
     position: 'relative',
   },
-  bar: {
-    background: '#fff',
-    position: 'fixed',
-    bottom: '65px',
-    right: '25px',
-    padding: '10px',
-  },
 };
 
 class EsriMap extends React.Component {
@@ -42,6 +35,7 @@ class EsriMap extends React.Component {
     },
   };
   titleRef = React.createRef();
+  viewdivRef = React.createRef();
   componentDidMount() {
     const { params } = this.props.match;
     this.ref = base.syncState(`${params.mapId}/esriMap`, {
@@ -69,14 +63,22 @@ class EsriMap extends React.Component {
   handleEditClick = () => {
     this.titleRef.current.focus();
   };
+
   createMap(data) {
     const layers = data || this.props.layers;
     const selectedIds = layers
       .filter(layer => layer.selected)
       .map(layer => layer.id);
-    const { esriMap: { zoom, center } } = this.state;
+    const {
+      esriMap: { zoom, center },
+    } = this.state;
     const options = {
-      url: 'https://js.arcgis.com/4.6/',
+      url: 'https://js.arcgis.com/4.7/',
+      dojoConfig: {
+        has: {
+          'esri-featurelayer-webgl': 1,
+        },
+      },
     };
     loadModules(
       [
@@ -84,7 +86,6 @@ class EsriMap extends React.Component {
         'esri/Map',
         'esri/layers/Layer',
         'esri/widgets/Expand',
-        'esri/widgets/Legend',
         'esri/widgets/LayerList',
         'esri/widgets/Print',
         'esri/widgets/Search',
@@ -92,17 +93,7 @@ class EsriMap extends React.Component {
       ],
       options,
     ).then(
-      ([
-        MapView,
-        Map,
-        Layer,
-        Expand,
-        Legend,
-        LayerList,
-        Print,
-        Search,
-        watchUtils,
-      ]) => {
+      ([MapView, Map, Layer, Expand, LayerList, Print, Search, watchUtils]) => {
         const webmap = new Map({
           basemap: 'topo-vector',
         });
@@ -112,6 +103,7 @@ class EsriMap extends React.Component {
           zoom: zoom,
           center: center,
         });
+        view.constraints = { rotationEnabled: false };
         selectedIds.forEach(id => {
           Layer.fromPortalItem({
             portalItem: {
@@ -120,26 +112,22 @@ class EsriMap extends React.Component {
           }).then(layer => webmap.add(layer));
         });
         view.when(() => {
-          const legend = new Legend({
-            view: view,
-            container: document.createElement('div'),
-          });
           const layerList = new LayerList({
             view: view,
             container: document.createElement('div'),
+            listItemCreatedFunction: function(event) {
+              const item = event.item;
+              item.panel = {
+                content: 'legend',
+                open: true,
+              };
+            },
           });
           const print = new Print({
             view,
             printServiceUrl:
               'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
             container: document.createElement('div'),
-          });
-          const legendExpand = new Expand({
-            view: view,
-            content: legend.domNode,
-            expandIconClass: 'esri-icon-collection',
-            expandTooltip: 'Legend',
-            group: 'right',
           });
           const layersExpand = new Expand({
             view: view,
@@ -156,7 +144,6 @@ class EsriMap extends React.Component {
             group: 'right',
           });
           view.ui.add(layersExpand, 'top-right');
-          view.ui.add(legendExpand, 'top-right');
           view.ui.add(printExpand, 'top-right');
         });
         const searchWidget = new Search({
@@ -185,25 +172,31 @@ class EsriMap extends React.Component {
       <Fragment>
         <Header>
           {!esriMap.title ? (
-            <Form onSubmit={this.handleTitleChange} style={style.form}>
-              <input
-                type="text"
-                placeholder="Give Your Map a Title"
-                ref={this.titleRef}
-                style={style.input}
-              />
-              <Icon
-                name="edit"
-                size="large"
-                onClick={this.handleEditClick}
-                style={{ color: 'rgba(255,255,255,0.6)' }}
-              />
-            </Form>
+            <Fragment>
+              <Responsive as={Menu.Item} minWidth={768}>
+                <Form onSubmit={this.handleTitleChange} style={styles.form}>
+                  <input
+                    type="text"
+                    placeholder="Give Your Map a Title"
+                    ref={this.titleRef}
+                    style={styles.input}
+                  />
+                  <Icon
+                    name="edit"
+                    size="large"
+                    onClick={this.handleEditClick}
+                    style={{ color: 'rgba(255,255,255,0.6)' }}
+                  />
+                </Form>
+              </Responsive>
+            </Fragment>
           ) : (
-            <h3>{esriMap.title}</h3>
+            <Menu.Item>
+              <h3>{esriMap.title}</h3>
+            </Menu.Item>
           )}
         </Header>
-        <div id="viewDiv" style={style.mapDiv} />
+        <div id="viewDiv" style={styles.mapDiv} />
       </Fragment>
     );
   }

@@ -1,10 +1,5 @@
 import { searchItems } from '@esri/arcgis-rest-items';
 import shortid from 'shortid';
-import axios from 'axios';
-
-const instance = axios.create({
-  baseURL: 'https://create-map-e758c.firebaseio.com/',
-});
 
 export const appService = {
   getFeatures() {
@@ -23,5 +18,3 @@ export const appService = {
 };
 
 export const mapId = shortid.generate();
-
-export default instance;
