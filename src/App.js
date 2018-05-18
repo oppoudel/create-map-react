@@ -21,12 +21,8 @@ class App extends Component {
               path="/map/:mapId"
               render={({ match }) => (
                 <Consumer>
-                  {({ state }) => (
-                    <EsriMap
-                      layers={state.layers}
-                      match={match}
-                      editable="Yes"
-                    />
+                  {({ layers }) => (
+                    <EsriMap layers={layers} match={match} editable="Yes" />
                   )}
                 </Consumer>
               )}

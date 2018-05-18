@@ -32,7 +32,8 @@ const Layers = () => {
     <Consumer>
       {({
         onToggleSelection,
-        state: { layers, searchTerm },
+        layers,
+        searchTerm,
         mapId,
         onSelectInputChange,
       }) => {

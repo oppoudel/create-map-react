@@ -6,9 +6,26 @@ import base from './base';
 const AppContext = React.createContext();
 
 export class Provider extends Component {
+  onToggleSelection = id => {
+    const { layers } = this.state;
+    this.setState({
+      layers: layers.map(
+        layer =>
+          layer.id !== id ? layer : { ...layer, selected: !layer.selected },
+      ),
+    });
+  };
+  onSelectInputChange = event => {
+    this.setState({
+      searchTerm: event.target.value,
+    });
+  };
   state = {
     searchTerm: '',
     layers: [],
+    onToggleSelection: this.onToggleSelection,
+    onSelectInputChange: this.onSelectInputChange,
+    mapId,
   };
   async componentDidMount() {
     const response = await appService.getFeatures();
@@ -24,30 +41,9 @@ export class Provider extends Component {
   componentWillUnmount() {
     base.removeBinding(this.ref);
   }
-
-  onToggleSelection = id => {
-    const { layers } = this.state;
-    this.setState({
-      layers: layers.map(
-        layer =>
-          layer.id !== id ? layer : { ...layer, selected: !layer.selected },
-      ),
-    });
-  };
-  onSelectInputChange = event => {
-    this.setState({
-      searchTerm: event.target.value,
-    });
-  };
   render() {
     return (
-      <AppContext.Provider
-        value={{
-          state: this.state,
-          onToggleSelection: this.onToggleSelection,
-          onSelectInputChange: this.onSelectInputChange,
-          mapId: mapId,
-        }}>
+      <AppContext.Provider value={this.state}>
         {this.props.children}
       </AppContext.Provider>
     );
